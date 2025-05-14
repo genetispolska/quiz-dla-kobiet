@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz – Czy to dla Ciebie?</title>
+  <style>
+    :root {
+      --main-color: #4b2aad;
+      --accent-color: #7b4cff;
+      --success-color: #00b894;
+      --warning-color: #fd79a8;
+      --bg-color: #fef9ff;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color);
+      margin: 0;
+      padding: 0;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .quiz-container {
+      background: #fff;
+      width: 100%;
+      max-width: 480px;
+      margin: 20px;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+
+    .quiz-image {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .intro, .question, #form {
+      text-align: center;
+    }
+
+    .intro h1 {
+      font-size: 1.8em;
+      color: var(--main-color);
+      margin-bottom: 0.3em;
+    }
+
+    .intro p {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 1.5em;
+    }
+
+    h2 {
+      font-size: 1.3em;
+      color: var(--main-color);
+      margin-bottom: 1em;
+    }
+
+    .option {
+      display: block;
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      color: white;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .option:nth-child(2n) { background: var(--accent-color); }
+    .option:nth-child(2n+1) { background: var(--success-color); }
+    .option:nth-child(3n) { background: var(--warning-color); }
+
+    .option:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    button {
+      background: var(--main-color);
+      color: #fff;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #381f7a;
+    }
+
+    input[type="text"], input[type="email"], input[type="tel"] {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0 16px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .quiz-container {
+        padding: 16px;
+      }
+      h1 {
+        font-size: 1.4em;
+      }
+      h2 {
+        font-size: 1.1em;
+      }
+      .option {
+        font-size: 15px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="intro">
+      <img src="https://images.pexels.com/photos/10041278/pexels-photo-10041278.jpeg" alt="Kobieta w biurze" class="quiz-image">
+      <h1>Zarabiaj 5–15 tys. zł miesięcznie</h1>
+      <p>Program franczyzowy dla kobiet – sprawdź, czy to coś dla Ciebie</p>
+      <button onclick="startQuiz()">Rozpocznij quiz</button>
+    </div>
+
+    <div id="quiz" class="hidden">
+      <div class="question" id="q1">
+        <h2>1. Na jakim etapie życia jesteś?</h2>
+        <div class="option" onclick="next(2)">Wróciłam na rynek po rozwodzie</div>
+        <div class="option" onclick="next(2)">Mam pracę, ale to nie to</div>
+        <div class="option" onclick="next(2)">Szukam nowego startu</div>
+      </div>
+
+      <div class="question hidden" id="q2">
+        <h2>2. Co chcesz zmienić jako pierwsze?</h2>
+        <div class="option" onclick="next(3)">Dochody – potrzebuję więcej</div>
+        <div class="option" onclick="next(3)">Elastyczność – nie chcę pracować „od–do”</div>
+        <div class="option" onclick="next(3)">Zaufanie do siebie – chcę poczuć, że dam radę</div>
+      </div>
+
+      <div class="question hidden" id="q3">
+        <h2>3. Chcesz poznać konkretny model zarabiania z domu?</h2>
+        <div class="option" onclick="showForm()">Tak, poproszę prezentację</div>
+        <div class="option" onclick="showForm()">Tak, ale chcę zapytać</div>
+        <div class="option" onclick="next(4)">Nie teraz</div>
+      </div>
+
+      <div class="question hidden" id="form">
+        <h2>Podaj swoje dane, a prześlemy Ci prezentację:</h2>
+        <form>
+          <input type="text" placeholder="Imię" required>
+          <input type="email" placeholder="E-mail" required>
+          <input type="tel" placeholder="Telefon" required>
+          <button type="submit">Wyślij prezentację</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startQuiz() {
+      document.querySelector('.intro').classList.add('hidden');
+      document.getElementById('quiz').classList.remove('hidden');
+    }
+
+    function next(n) {
+      const curr = document.querySelector('.question:not(.hidden)');
+      if (curr) curr.classList.add('hidden');
+      const next = document.getElementById('q' + n);
+      if (next) next.classList.remove('hidden');
+    }
+
+    function showForm() {
+      const curr = document.querySelector('.question:not(.hidden)');
+      if (curr) curr.classList.add('hidden');
+      document.getElementById('form').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
