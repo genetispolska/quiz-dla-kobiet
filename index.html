@@ -3,197 +3,235 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz – Czy to dla Ciebie?</title>
+  <title>Quiz VideoAsk Style – Konsultacja</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --main-color: #4b2aad;
-      --accent-color: #7b4cff;
-      --success-color: #00b894;
-      --warning-color: #fd79a8;
-      --bg-color: #fef9ff;
-    }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-color);
+    html, body {
       margin: 0;
       padding: 0;
-      color: #333;
+      width: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background: #f8f9fa;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    .step {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-end;
       align-items: center;
-      min-height: 100vh;
+      overflow: hidden;
     }
-
-    .quiz-container {
-      background: #fff;
+    .step video {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 480px;
-      margin: 20px;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
     }
-
-    .quiz-image {
-      width: 100%;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-
-    .intro, .question, #form {
+    .overlay {
+      position: relative;
+      width: 90%;
+      max-width: 420px;
+      margin: 0 auto 10vh;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
       text-align: center;
     }
-
-    .intro h1 {
-      font-size: 1.8em;
-      color: var(--main-color);
-      margin-bottom: 0.3em;
-    }
-
-    .intro p {
-      font-size: 1em;
-      color: #555;
-      margin-bottom: 1.5em;
-    }
-
-    h2 {
-      font-size: 1.3em;
-      color: var(--main-color);
-      margin-bottom: 1em;
-    }
-
-    .option {
-      display: block;
-      padding: 14px 20px;
-      border-radius: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      color: white;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .option:nth-child(2n) { background: var(--accent-color); }
-    .option:nth-child(2n+1) { background: var(--success-color); }
-    .option:nth-child(3n) { background: var(--warning-color); }
-
-    .option:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-    }
-
-    button {
-      background: var(--main-color);
+    .bubble-btn {
+      background-color: rgba(0, 0, 0, 0.6);
       color: #fff;
-      padding: 14px 20px;
       border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 36px;
+      font-size: 18px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
       cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
-      transition: background 0.3s ease;
     }
-
-    button:hover {
-      background: #381f7a;
-    }
-
-    input[type="text"], input[type="email"], input[type="tel"] {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0 16px;
-      border: 2px solid #ccc;
-      border-radius: 10px;
+    .bubble-circle {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 16px;
-      box-sizing: border-box;
     }
-
-    .hidden {
-      display: none;
+    .player-overlay {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 3;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
-
-    @media (max-width: 480px) {
-      .quiz-container {
-        padding: 16px;
-      }
-      h1 {
-        font-size: 1.4em;
-      }
-      h2 {
-        font-size: 1.1em;
-      }
-      .option {
-        font-size: 15px;
-        padding: 12px;
-      }
+    .player-overlay::before {
+      content: '\25B6';
+      font-size: 40px;
+      color: #111;
+      margin-left: 4px;
+    }
+    .progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 5;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #007bff;
+      width: 0%;
+    }
+    .countdown-timer {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 14px;
+      color: white;
+      z-index: 6;
+      font-weight: bold;
+    }
+    .quiz-caption {
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .animate {
+      animation: popin 0.6s ease-out;
+    }
+    @keyframes popin {
+      0% { opacity: 0; transform: scale(0.8); }
+      60% { opacity: 1; transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <div class="quiz-container">
-    <div class="intro">
-      <img src="https://images.pexels.com/photos/10041278/pexels-photo-10041278.jpeg" alt="Kobieta w biurze" class="quiz-image">
-      <h1>Zarabiaj 5–15 tys. zł miesięcznie</h1>
-      <p>Program franczyzowy dla kobiet – sprawdź, czy to coś dla Ciebie</p>
-      <button onclick="startQuiz()">Rozpocznij quiz</button>
+  <div class="step" id="step1">
+    <video id="video1" muted playsinline>
+      <source src="https://consily.pl/wp-content/uploads/2025/05/sample1.mp4" type="video/mp4">
+    </video>
+    <div class="progress-bar-container"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="countdown-timer" id="countdown">5s</div>
+    <div class="player-overlay" onclick="playVideo('video1', this)"></div>
+    <div class="overlay">
+      <div class="quiz-caption animate" id="caption">Cześć! Powiedz mi, jaki cel chciałabyś osiągnąć?</div>
+      <button class="bubble-btn" onclick="nextStep('step2')"><span class="bubble-circle">A</span> Pracuję, ale szukam zmiany</button>
+      <button class="bubble-btn" onclick="nextStep('step2')"><span class="bubble-circle">B</span> Mam działalność, ale chcę coś nowego</button>
+      <button class="bubble-btn" onclick="nextStep('step2')"><span class="bubble-circle">C</span> Jestem na rozdrożu i szukam pomysłu</button>
     </div>
+  </div>
 
-    <div id="quiz" class="hidden">
-      <div class="question" id="q1">
-        <h2>1. Na jakim etapie życia jesteś?</h2>
-        <div class="option" onclick="next(2)">Wróciłam na rynek po rozwodzie</div>
-        <div class="option" onclick="next(2)">Mam pracę, ale to nie to</div>
-        <div class="option" onclick="next(2)">Szukam nowego startu</div>
-      </div>
+  <div class="step" id="step2" style="display:none;">
+    <video id="video2" muted playsinline>
+      <source src="https://consily.pl/wp-content/uploads/2025/05/sample1.mp4" type="video/mp4">
+    </video>
+    <div class="player-overlay" onclick="playVideo('video2', this)"></div>
+    <div class="overlay">
+      <button class="bubble-btn" onclick="nextStep('step3')"><span class="bubble-circle">A</span> Zarobki i niezależność</button>
+      <button class="bubble-btn" onclick="nextStep('step3')"><span class="bubble-circle">B</span> Elastyczność i czas dla siebie</button>
+      <button class="bubble-btn" onclick="nextStep('step3')"><span class="bubble-circle">C</span> Rozwój i pewność siebie</button>
+    </div>
+  </div>
 
-      <div class="question hidden" id="q2">
-        <h2>2. Co chcesz zmienić jako pierwsze?</h2>
-        <div class="option" onclick="next(3)">Dochody – potrzebuję więcej</div>
-        <div class="option" onclick="next(3)">Elastyczność – nie chcę pracować „od–do”</div>
-        <div class="option" onclick="next(3)">Zaufanie do siebie – chcę poczuć, że dam radę</div>
-      </div>
+  <div class="step" id="step3" style="display:none;">
+    <video id="video3" muted playsinline>
+      <source src="https://consily.pl/wp-content/uploads/2025/05/sample1.mp4" type="video/mp4">
+    </video>
+    <div class="player-overlay" onclick="playVideo('video3', this)"></div>
+    <div class="overlay">
+      <button class="bubble-btn" onclick="nextStep('formStep')"><span class="bubble-circle">A</span> Tak, chcę poznać model</button>
+      <button class="bubble-btn" onclick="nextStep('formStep')"><span class="bubble-circle">B</span> Tak, ale mam pytanie</button>
+      <button class="bubble-btn" onclick="nextStep('formStep')"><span class="bubble-circle">C</span> Potrzebuję więcej informacji</button>
+    </div>
+  </div>
 
-      <div class="question hidden" id="q3">
-        <h2>3. Chcesz poznać konkretny model zarabiania z domu?</h2>
-        <div class="option" onclick="showForm()">Tak, poproszę prezentację</div>
-        <div class="option" onclick="showForm()">Tak, ale chcę zapytać</div>
-        <div class="option" onclick="next(4)">Nie teraz</div>
-      </div>
-
-      <div class="question hidden" id="form">
-        <h2>Podaj swoje dane, a prześlemy Ci prezentację:</h2>
-        <form>
-          <input type="text" placeholder="Imię" required>
-          <input type="email" placeholder="E-mail" required>
-          <input type="tel" placeholder="Telefon" required>
-          <button type="submit">Wyślij prezentację</button>
-        </form>
-      </div>
+  <div class="step" id="formStep" style="display:none;">
+    <div class="overlay">
+      <h2 style="color: #222; font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 16px;">🎯 Umów się na bezpłatną konsultację</h2>
+      <p style="color: #333; font-size: 16px; margin-bottom: 20px; font-weight: 500; text-align: center;">
+        📈 Poznaj model zarobkowy 5–15 tys. zł<br>🤝 1:1 z mentorką<br>🕒 Tylko 15 minut – bez zobowiązań
+      </p>
+      <form style="display: flex; flex-direction: column; gap: 16px; font-family: 'Montserrat', sans-serif; align-items: center;">
+        <input type="text" placeholder="Imię" required style="padding: 16px; font-size: 18px; border-radius: 10px; border: 1px solid #ccc; width: 100%; max-width: 320px;">
+        <input type="email" placeholder="Email" required style="padding: 16px; font-size: 18px; border-radius: 10px; border: 1px solid #ccc; width: 100%; max-width: 320px;">
+        <input type="tel" placeholder="Telefon" required style="padding: 16px; font-size: 18px; border-radius: 10px; border: 1px solid #ccc; width: 100%; max-width: 320px;">
+        <button class="btn" type="submit" style="padding: 18px 28px; font-size: 18px; font-weight: 600; border-radius: 32px; background-color: #28a745; color: white; width: 100%; max-width: 320px;">Zapisz się na konsultację</button>
+      </form>
     </div>
   </div>
 
   <script>
-    function startQuiz() {
-      document.querySelector('.intro').classList.add('hidden');
-      document.getElementById('quiz').classList.remove('hidden');
+    function playVideo(id, button) {
+      const video = document.getElementById(id);
+      if (video) video.play();
+      if (button) button.style.display = 'none';
     }
 
-    function next(n) {
-      const curr = document.querySelector('.question:not(.hidden)');
-      if (curr) curr.classList.add('hidden');
-      const next = document.getElementById('q' + n);
-      if (next) next.classList.remove('hidden');
+    function nextStep(id) {
+      document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
+      const next = document.getElementById(id);
+      if (next) {
+        next.style.display = 'flex';
+        const video = next.querySelector('video');
+        if (video) video.play();
+        startTimer(5);
+      }
     }
 
-    function showForm() {
-      const curr = document.querySelector('.question:not(.hidden)');
-      if (curr) curr.classList.add('hidden');
-      document.getElementById('form').classList.remove('hidden');
+    function startTimer(duration = 5) {
+      let timeLeft = duration;
+      const countdown = document.getElementById('countdown');
+      const progressFill = document.getElementById('progressFill');
+      if (!countdown || !progressFill) return;
+      countdown.textContent = timeLeft + 's';
+      progressFill.style.width = '0%';
+      const interval = setInterval(() => {
+        timeLeft--;
+        countdown.textContent = timeLeft + 's';
+        progressFill.style.width = ((duration - timeLeft) / duration) * 100 + '%';
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
     }
+
+    window.onload = () => {
+      startTimer(5);
+      const caption = document.getElementById('caption');
+      setTimeout(() => {
+        caption.classList.remove('animate');
+        caption.textContent = 'Wybierz odpowiedź, która najlepiej pasuje do Ciebie';
+        caption.classList.add('animate');
+      }, 5000);
+    };
   </script>
 </body>
 </html>
